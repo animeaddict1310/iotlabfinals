@@ -1,0 +1,105 @@
+#include <SPI.h>
+
+#include <AIR430BoostETSI.h>
+
+int launchpadButtonState = 0;
+
+int launchpadButtonState2 = 0;//variable
+
+unsigned char txData[7] = { 0x30, 'E','N','T','R','Y','\0' };
+
+unsigned char txData2[7] = { 0x30, 'E','X','I','T','\0','\0' };
+
+unsigned char rxData[7] = { '\0', '\0', '\0', '\0', '\0', '\0' };
+
+void printTxData()
+
+{
+
+Serial.print("TX (DATA): ");
+
+Serial.println((char*)txData);  
+
+}
+
+void printTxData2()
+
+{
+
+Serial.print("TX (DATA): ");
+
+Serial.println((char*)txData2);  
+
+}
+
+void printRxData()
+
+{
+
+Serial.print("RX (DATA, RSSI, LQI, CRCBIT): ");
+
+Serial.print("(");
+
+Serial.print((char*)rxData);
+
+Serial.print(", ");
+
+Serial.print(Radio.getRssi());
+
+Serial.print(", ");
+
+Serial.print(Radio.getLqi());
+
+Serial.print(", ");
+
+Serial.print(Radio.getCrcBit());
+
+Serial.println(")");
+
+}
+
+void setup()
+
+{
+
+Radio.begin(0x01, CHANNEL_1, POWER_MAX);
+
+Serial.begin(9600);
+
+pinMode(RED_LED, OUTPUT);
+
+digitalWrite(RED_LED, LOW); // set the LED on
+
+pinMode(PUSH1, INPUT_PULLUP); //Setting the of onboard Push button to PULLUP
+
+pinMode(PUSH2,INPUT_PULLUP);
+
+}
+
+void loop()
+
+{
+
+launchpadButtonState = digitalRead(PUSH1);
+
+launchpadButtonState2 = digitalRead(PUSH2);
+
+if (launchpadButtonState == 0 )
+
+{
+
+Radio.transmit(ADDRESS_BROADCAST, txData, 7);
+
+printTxData();  
+
+}
+
+else if (launchpadButtonState2 == 0)
+
+{
+
+Radio.transmit(ADDRESS_BROADCAST, txData2, 7);
+
+printTxData2();
+
+}
