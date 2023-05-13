@@ -1,0 +1,31 @@
+#include <WiFi.h>
+const int push1Pin = 1;  // Push1 button pin
+const int push2Pin = 2;  // Push2 button pin
+const int ledPin = 13;   // Onboard LED pin
+char ssid[] = "PNP";       // your network SSID (name)
+char pass[] = "1234567893";   // your network password
+int status = WL_IDLE_STATUS;     // the WiFi connection status
+int keyIndex = 0;
+void setup() {
+  Serial.begin(9600);
+  pinMode(push1Pin, INPUT_PULLUP);
+  pinMode(push2Pin, INPUT_PULLUP);
+  pinMode(ledPin, OUTPUT);
+}
+void loop() {
+  if (digitalRead(push1Pin) == LOW) {
+    digitalWrite(ledPin, HIGH);   // Turn on LED
+    delay(2000);                  // Wait for 2 seconds
+    if (status == WL_CONNECTED) {
+      Serial.println(WiFi.localIP());   // Print the local IP address
+    }
+  }
+  if (digitalRead(push2Pin) == LOW) {
+    digitalWrite(ledPin, HIGH);   // Turn on LED
+    delay(500);                   // Wait for 0.5 seconds
+    WiFi.disconnect();            // Disconnect from WiFi
+    status = WL_IDLE_STATUS;      // Update the connection status
+    Serial.println("Waiting for an ip address");
+  }
+  digitalWrite(ledPin, LOW);      // Turn off LED
+}
