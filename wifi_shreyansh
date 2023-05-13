@@ -1,0 +1,77 @@
+#ifndef __CC3200R1M1RGC__
+#include <SPI.h>
+#endif
+#include <WiFi.h>
+char ssid[] = "Moto g82 5G";
+char password[] = "Shreyansh";
+int keyIndex = 0;
+int connectButton = 0;
+int disconnectButton = 0;
+void setup()
+{
+Serial.begin(115200);
+Serial.println("IP Link");
+pinMode(PUSH1 , INPUT_PULLUP);
+pinMode(PUSH2 , INPUT_PULLUP);
+}
+#define STRLEN 32
+char buffer[STRLEN];
+int bufferIndex = 0;
+void loop()
+{
+connectButton = digitalRead(PUSH1);
+disconnectButton = digitalRead(PUSH2);
+if (connectButton == 0 && disconnectButton == 1) {
+Serial.println("Attempting to connect in 2seconds");
+delay(1000);
+Serial.println("Attempting to connect in 1second");
+delay(1000);
+Serial.print("Attempting to connect to Network named: ");
+Serial.println(ssid);
+WiFi.begin(ssid, password);
+while ( WiFi.status() != WL_CONNECTED)
+{
+Serial.print(".");
+delay(300);
+}
+Serial.println("\nCONNECTED.... :)");
+Serial.println("Waiting for an ip address");
+while (WiFi.localIP() == INADDR_NONE)
+{
+Serial.print(".");
+delay(300);
+}
+Serial.println("\nIP Address obtained");
+printWifiStatus();
+}
+if(connectButton == 1 && disconnectButton == 0){
+Serial.println("Attempting to disconnect in 500ms");
+delay(500);
+Serial.println("Attempting to disconnect");
+WiFi.disconnect();
+while ( WiFi.status() == WL_CONNECTED)
+{
+Serial.print(".");
+delay(300);
+}
+Serial.println("DISCONNECTED.. :)");
+
+ 
+
+}
+
+ 
+
+}
+void printWifiStatus()
+{
+Serial.print("Network Name: ");
+Serial.println(WiFi.SSID());
+IPAddress ip = WiFi.localIP();
+Serial.print("IP Address: ");
+Serial.println(ip);
+long rssi = WiFi.RSSI();
+Serial.print("signal strength (RSSI):");
+Serial.print(rssi);
+Serial.println(" dBm");
+}
