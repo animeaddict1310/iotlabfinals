@@ -1,0 +1,133 @@
+#include <SPI.h> 
+
+#include <AIR430BoostETSI.h> 
+
+#define LED RED_LED  
+
+int launchpadButtonState1 = 0; 
+
+int launchpadButtonState2 = 0; 
+
+unsigned char txData1[6] = { 0x30, 'S', A', 'F', 'E', '\0' }; 
+
+unsigned char txData2[6] = { 'W', 'A', 'R', 'N', '\0', '\0' }; 
+
+void printTxData1() 
+
+{ 
+
+ Serial.print("TX (DATA): "); 
+
+ Serial.println((char*)txData1);  
+
+} 
+
+void printTxData2() 
+
+{ 
+
+ Serial.print("TX (DATA): "); 
+
+ Serial.println((char*)txData2);  
+
+} 
+
+ 
+
+void printRxData() 
+
+{ 
+
+ Serial.print("RX (DATA, RSSI, LQI, CRCBIT): "); 
+
+ Serial.print("("); 
+
+ Serial.print((char*)rxData); 
+
+ Serial.print(", "); 
+
+ Serial.print(Radio.getRssi()); 
+
+ Serial.print(", "); 
+
+ Serial.print(Radio.getLqi()); 
+
+ Serial.print(", "); 
+
+ Serial.print(Radio.getCrcBit()); 
+
+ Serial.println(")"); 
+
+} 
+
+40 
+
+ 
+
+ 
+
+void setup() 
+
+{ 
+
+ Radio.begin(0x01, CHANNEL_1, POWER_MAX); 
+
+ Serial.begin(9600); 
+
+ pinMode(RED_LED, OUTPUT); 
+
+ digitalWrite(RED_LED, LOW); // set the LED on 
+
+pinMode(PUSH1, INPUT_PULLUP); 
+
+pinMode(PUSH2, INPUT_PULLUP); 
+
+} 
+
+void loop() 
+
+{ 
+
+ Radio.transmit(ADDRESS_BROADCAST, txData1, 6); 
+
+Radio.transmit(ADDRESS_BROADCAST, txData2, 6); 
+
+launchpadButtonState1 = digitalRead(PUSH1); 
+
+launchpadButtonState2 = digitalRead(PUSH2); 
+
+ if (launchpadButtonState1 == 1 || launchpadButtonState2 == 1 )  
+
+ { 
+
+printTxData2();  
+
+ } 
+
+ else 
+
+ {  
+
+printTxData1();  
+
+ } 
+
+} 
+
+ while (Radio.busy()); 
+
+ if (Radio.receiverOn(rxData, sizeof(rxData), 1000) > 0) 
+
+ { 
+
+ digitalWrite(RED_LED, HIGH); 
+
+ printRxData(); 
+
+ } 
+
+ digitalWrite(RED_LED, LOW); 
+
+ delay(1000); 
+
+} 
