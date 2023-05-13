@@ -1,0 +1,40 @@
+#include <SPI.h> 
+#include <AIR430BoostETSI.h> 
+unsigned char txData[7] = { 0x30, '1', '0', '0', '\0', '\0' }; 
+unsigned char rxData[7] = { '\0','\0', '\0', '\0', '\0', '\0', '\0' }; 
+const int buttonPin1 = PUSH1; 
+const int buttonPin2 = PUSH2; 
+int buttonState1 = 1; 
+int buttonState2 = 1; 
+int count = 0; 
+ 
+ 
+void setup() 
+{ 
+ Radio.begin(0x01, CHANNEL_1, POWER_MAX); 
+ Serial.begin(9600); 
+ pinMode(buttonPin1, INPUT_PULLUP);  
+ pinMode(buttonPin2, INPUT_PULLUP);  
+ pinMode(RED_LED, OUTPUT); 
+ pinMode(GREEN_LED, OUTPUT); 
+ digitalWrite(RED_LED, LOW); // set the LED on 
+} 
+void loop() 
+{ 
+ buttonState1 = digitalRead(buttonPin1); 
+ buttonState2 = digitalRead(buttonPin2); 
+ if (buttonState1 == 0){    
+     digitalWrite(RED_LED, HIGH); 
+     digitalWrite(GREEN_LED, LOW); 
+     Serial.print("TX (DATA): "); 
+     Serial.println((char*)txData);   
+     Radio.transmit(ADDRESS_BROADCAST, txData, 7);   
+     while(count ==0);    
+ } 
+ if (buttonState1 == 1) { 
+         digitalWrite(GREEN_LED, HIGH); 
+         digitalWrite(RED_LED, LOW);   
+  } 
+ 
+ 
+} 
